@@ -1,6 +1,7 @@
 # algorithm-data-structure
-
-A Clojure library designed to ... well, that part is up to you.
+Algorithms and (Probabilistic) data structures Clojure version Port from 
+https://github.com/trekhleb/javascript-algorithms
+https://github.com/tylertreat/BoomFilters 
 
 ## Usage
 
