@@ -11,7 +11,7 @@
 
 (defn append [llist value]
   (let [new-node (llnode/create value)]
-    (if (not (:head llist))
+    (if-not (:head llist)
       (assoc llist
              :head new-node
              :tail new-node)
@@ -91,12 +91,11 @@
 
 (defn delete-head [llist]
   (if (:head llist)
-    (let [head (if-let [hn (get-in llist [:head :next])]
-                 hn
-                 nil)]
+    (let [head (when-let [hn (get-in llist [:head :next])]
+                 hn)]
       [(assoc llist
               :head hn
-              :tail (if hn (:tail llist) nil))
+              :tail (when hn (:tail llist)))
        (:head llist)])
     [llist nil]))
 

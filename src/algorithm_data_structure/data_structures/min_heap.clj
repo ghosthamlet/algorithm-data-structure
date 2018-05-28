@@ -28,7 +28,7 @@
   (apply update heap :heap-container f args))
 
 (defn get-left-child-index [parent-index]
-  (+ (* 2 parent-index) 1))
+  (inc (* 2 parent-index)))
 
 (defn get-right-child-index [parent-index]
   (+ (* 2 parent-index) 2))

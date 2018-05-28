@@ -44,12 +44,11 @@
                      compare-edge)))
 
 (defn find-edge [gvertex vertex]
-  (if-let [edge (llist/find* (:edges gvertex)
-                             nil
-                             #(or (= (:start-vertex %) vertex)
-                                  (= (:end-vertex %) vertex)))]
-    (:value edge)
-    nil))
+  (when-let [edge (llist/find* (:edges gvertex)
+                               nil
+                               #(or (= (:start-vertex %) vertex)
+                                    (= (:end-vertex %) vertex)))]
+    (:value edge)))
 
 (defn get-key [gvertex]
   (:value gvertex))
