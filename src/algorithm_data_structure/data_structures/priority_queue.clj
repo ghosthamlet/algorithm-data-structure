@@ -34,6 +34,11 @@
 (defn update-prior [queue f & args]
   (apply update queue :priorities f args))
 
+(defn poll [queue]
+  (let [[heap item] (queue/poll (:heap queue)
+                                (compare-priority-fn queue))]
+    [(assoc queue :heap heap) item]))
+
 (defn add
   ([queue item]
    (add queue item 0))
