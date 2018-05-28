@@ -99,7 +99,7 @@
   (let [vertices (get-all-vertices ggraph)
         vertices-indices (get-vertices-indices ggraph)
         adjacency-matrix (let [xs (range (count vertices))]
-                           (map (fn [_] (map INFINITY xs)) xs))]
+                           (map (fn [_] (map (fn [_] (Integer/MAX_VALUE)) xs)) xs))]
     (last (reduce (fn [[i vs] vertex]
                     [(inc i)
                      (reduce #(assoc-in %1
