@@ -31,10 +31,10 @@
   (inc (* 2 parent-index)))
 
 (defn get-right-child-index [parent-index]
-  (+ (* 2 parent-index) 2))
+  (inc (get-left-child-index parent-index)))
 
 (defn get-parent-index [child-index]
-  (Math/floor (/ (dec child-index) 2)))
+  (int (Math/floor (/ (dec child-index) 2))))
 
 (defn has-parent [child-index]
   (>= (get-parent-index child-index) 0))
@@ -66,10 +66,11 @@
    (if (and (has-parent custom-start-index)
             (compare :less-then
                      (nthh heap custom-start-index)
-                     (parent custom-start-index)))
+                     (parent heap custom-start-index)))
      (recur (swap heap
                   custom-start-index
                   (get-parent-index custom-start-index))
+            compare
             (get-parent-index custom-start-index))
      heap)))
 
@@ -77,18 +78,19 @@
   ([heap compare]
    (heapify-down heap compare 0))
   ([heap compare custom-start-index]
-   (if (has-left-child custom-start-index)
+   (if (has-left-child heap custom-start-index)
      (let [next-index (if (and (has-right-child heap custom-start-index)
                                (compare :less-then
-                                        (right-child custom-start-index)
-                                        (left-child custom-start-index)))
-                        (get-right-child-index heap custom-start-index)
-                        (get-left-child-index heap custom-start-index))]
+                                        (right-child heap custom-start-index)
+                                        (left-child heap custom-start-index)))
+                        (get-right-child-index custom-start-index)
+                        (get-left-child-index custom-start-index))]
        (if (compare :less-then
                     (nthh heap custom-start-index)
                     (nthh heap next-index))
          heap
          (recur (swap heap custom-start-index next-index)
+                compare
                 next-index)))
      heap)))
 
@@ -100,7 +102,7 @@
   (case (lenh heap)
     0 [heap nil]
     1 (update ((juxt butlast last) (cont heap))
-              0 #(assoc-cont heap %))
+              0 #(assoc-cont heap (vec %)))
     [(heapify-down (assoc-cont heap (move (cont heap) :last 0)) compare)
      (first (cont heap))]))
 
@@ -116,37 +118,35 @@
       (if (= item-index len)
         found-item-indices
         (recur (inc item-index)
-               (if (custom-compare :equal
-                                   item
-                                   (nthh heap item-index))
+               (if (custom-compare :equal item (nthh heap item-index))
                  (conj found-item-indices item-index)
                  found-item-indices))))))
 
 (defn remove*
   [heap item compare custom-compare]
   (let [custom-compare (or custom-compare compare)
-        number-of-items-to-remove (find* heap item compare custom-compare)]
+        number-of-items-to-remove (count (find* heap item compare custom-compare))]
     (loop [iteration 0
-           heap-container (cont heap)]
+           heap heap]
       (if (= iteration number-of-items-to-remove)
-        (assoc-cont heap heap-container)
+        heap
         (recur (inc iteration)
-               (let [index-to-remove (last (find* heap-container item compare custom-compare))]
-                 (if (->> heap-container count dec (= index-to-remove))
-                   (butlast heap-container)
-                   (cont (let [heap-container (move heap-container :last index-to-remove)
-                               parent-item (when (has-parent heap-container index-to-remove)
-                                             (parent heap-container index-to-remove))
-                               left-child-item (when (has-left-child heap-container
-                                                                     index-to-remove)
-                                                 (left-child heap-container index-to-remove))]
-                           (if (->> index-to-remove
-                                    (nth heap-container)
-                                    (compare :less-then parent-item)
-                                    (or parent-item)
-                                    (and left-child-item))
-                             (heapify-down (assoc-cont heap heap-container) compare index-to-remove)
-                             (heapify-up (assoc-cont heap heap-container) compare index-to-remove)))))))))))
+               (let [index-to-remove (last (find* heap item compare custom-compare))]
+                 (if (->> (cont heap) count dec (= index-to-remove))
+                   (update-cont heap butlast)
+                   (let [heap-container (move (cont heap) :last index-to-remove)
+                         parent-item (when (has-parent index-to-remove)
+                                       (parent heap index-to-remove))
+                         left-child-item (when (has-left-child heap
+                                                               index-to-remove)
+                                           (left-child heap index-to-remove))]
+                     (if (->> index-to-remove
+                              (nth heap-container)
+                              (compare :less-then parent-item)
+                              (or parent-item)
+                              (and left-child-item))
+                       (heapify-down (assoc-cont heap heap-container) compare index-to-remove)
+                       (heapify-up (assoc-cont heap heap-container) compare index-to-remove))))))))))
 
 (defn empty? [heap]
   (zero? (lenh heap)))
