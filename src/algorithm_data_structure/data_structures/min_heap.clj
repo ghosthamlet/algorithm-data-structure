@@ -8,13 +8,13 @@
 (defn create []
   {:heap-container []})
 
-(defn cont [heap]
+(defn- cont [heap]
   (:heap-container heap))
 
-(defn lenh [heap]
+(defn- len* [heap]
   (count (cont heap)))
 
-(defn nthh [heap n]
+(defn- nth* [heap n]
   (nth (cont heap) n))
 
 (defn assoc-cont
@@ -40,32 +40,32 @@
   (>= (get-parent-index child-index) 0))
 
 (defn has-left-child [heap parent-index]
-  (< (get-left-child-index parent-index) (lenh heap)))
+  (< (get-left-child-index parent-index) (len* heap)))
 
 (defn has-right-child [heap parent-index]
-  (< (get-right-child-index parent-index) (lenh heap)))
+  (< (get-right-child-index parent-index) (len* heap)))
 
 (defn left-child [heap parent-index]
-  (nthh heap (get-left-child-index parent-index)))
+  (nth* heap (get-left-child-index parent-index)))
 
 (defn right-child [heap parent-index]
-  (nthh heap (get-right-child-index parent-index)))
+  (nth* heap (get-right-child-index parent-index)))
 
 (defn parent [heap child-index]
-  (nthh heap (get-parent-index child-index)))
+  (nth* heap (get-parent-index child-index)))
 
 (defn swap [heap index-one index-two]
   (assoc-cont heap
-              index-one (nthh heap index-two)
-              index-two (nthh heap index-one)))
+              index-one (nth* heap index-two)
+              index-two (nth* heap index-one)))
 
 (defn heapify-up
   ([heap compare]
-   (heapify-up heap compare (dec (lenh heap))))
+   (heapify-up heap compare (dec (len* heap))))
   ([heap compare custom-start-index]
    (if (and (has-parent custom-start-index)
             (compare :less-then
-                     (nthh heap custom-start-index)
+                     (nth* heap custom-start-index)
                      (parent heap custom-start-index)))
      (recur (swap heap
                   custom-start-index
@@ -86,8 +86,8 @@
                         (get-right-child-index custom-start-index)
                         (get-left-child-index custom-start-index))]
        (if (compare :less-then
-                    (nthh heap custom-start-index)
-                    (nthh heap next-index))
+                    (nth* heap custom-start-index)
+                    (nth* heap next-index))
          heap
          (recur (swap heap custom-start-index next-index)
                 compare
@@ -95,11 +95,11 @@
      heap)))
 
 (defn peek [heap]
-  (when (pos? (lenh heap))
+  (when (pos? (len* heap))
     (first (cont heap))))
 
 (defn poll [heap compare]
-  (case (lenh heap)
+  (case (len* heap)
     0 [heap nil]
     1 (update ((juxt butlast last) (cont heap))
               0 #(assoc-cont heap (vec %)))
@@ -112,13 +112,13 @@
 (defn find*
   [heap item compare custom-compare]
   (let [custom-compare (or custom-compare compare)
-        len (lenh heap)]
+        len (len* heap)]
     (loop [item-index 0
            found-item-indices []]
       (if (= item-index len)
         found-item-indices
         (recur (inc item-index)
-               (if (custom-compare :equal item (nthh heap item-index))
+               (if (custom-compare :equal item (nth* heap item-index))
                  (conj found-item-indices item-index)
                  found-item-indices))))))
 
@@ -148,8 +148,8 @@
                        (heapify-down (assoc-cont heap heap-container) compare index-to-remove)
                        (heapify-up (assoc-cont heap heap-container) compare index-to-remove))))))))))
 
-(defn empty? [heap]
-  (zero? (lenh heap)))
+(defn empty?* [heap]
+  (zero? (len* heap)))
 
 (defn ->string [heap]
   (str (cont heap)))

@@ -2,21 +2,7 @@
   (:require [algorithm-data-structure.data-structures.min-heap :as heap]
             [algorithm-data-structure.util :refer :all]))
 
-(defn- compare-action [f action a b]
-  (case action
-    :equal (zero? (f a b))
-    :less-then (neg? (f a b))
-    (throw (Exception. "no implemention"))))
-
-(defn compare-value
-  ([action a b]
-   (compare-action compare-value action a b))
-  ([a b]
-   (if (= a b)
-     0
-     (if (< a b) -1 1))))
-
-(defn compare-priority-fn [queue]
+(defn- compare-priority-fn [queue]
   (fn compare
     ([action a b]
      (compare-action compare action a b))

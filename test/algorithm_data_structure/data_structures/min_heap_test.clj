@@ -1,20 +1,7 @@
 (ns algorithm-data-structure.data-structures.min-heap-test
   (:require [algorithm-data-structure.data-structures.min-heap :as heap]
+            [algorithm-data-structure.util :refer :all]
             [clojure.test :refer :all]))
-
-(defn- compare-action [f action a b]
-  (case action
-    :equal (zero? (f a b))
-    :less-then (neg? (f a b))
-    (throw (Exception. "no implemention"))))
-
-(defn compare-value
-  ([action a b]
-   (compare-action compare-value action a b))
-  ([a b]
-   (if (= a b)
-     0
-     (if (< a b) -1 1))))
 
 (def heap {:heap-container []})
 (def heap2 {:heap-container [-21 -20 0 -8 6 20 0 300 10 20]})

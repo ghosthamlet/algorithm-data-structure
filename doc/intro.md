@@ -11,7 +11,7 @@ https://github.com/skalmadka/ProbabilisticDataStructures/blob/master/src/main/ja
 https://github.com/Uditgulati/Awesome-SPOJ-Problems
 https://github.com/pfalcon/awesome-implicit-data-structures
 
-Maybe include DHT and Blocktrain like distributed/cryptograph data structures
+Maybe include DHT and Blockchain like distributed/cryptograph data structures
 https://github.com/bbarrows/dht_streamer
 https://github.com/Cantido/clj-bittorrent
 https://github.com/stanistan/am-interested
