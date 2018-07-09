@@ -15,11 +15,11 @@
               true))))))
 
 (defn search [ggraph start-vertex
-              {:keys [allow-traversal enter-vertex leave-vertex]
-               :or {allow-traversal allow-traversal
-                    enter-vertex stub-callback
-                    leave-vertex stub-callback}
-               :as callbacks}]
+              & {:keys [allow-traversal enter-vertex leave-vertex]
+                 :or {allow-traversal allow-traversal
+                      enter-vertex stub-callback
+                      leave-vertex stub-callback}
+                 :as callbacks}]
   (let [previous-vertex nil
         rec (fn [current-vertex previous-vertex]
               (enter-vertex (->m current-vertex previous-vertex))

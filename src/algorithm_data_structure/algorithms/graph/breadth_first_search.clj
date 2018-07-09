@@ -16,11 +16,11 @@
               true))))))
 
 (defn search [ggraph start-vertex
-              {:keys [allow-traversal enter-vertex leave-vertex]
-               :or {allow-traversal allow-traversal
-                    enter-vertex stub-callback
-                    leave-vertex stub-callback}
-               :as callbacks}]
+              & {:keys [allow-traversal enter-vertex leave-vertex]
+                 :or {allow-traversal allow-traversal
+                      enter-vertex stub-callback
+                      leave-vertex stub-callback}
+                 :as callbacks}]
   (let [vertex-queue (queue/enqueue (queue/create) start-vertex)]
     (loop [previous-vertex nil
            [vertex-queue current-vertex] (queue/dequeue vertex-queue)]

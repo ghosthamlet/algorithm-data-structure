@@ -13,6 +13,11 @@
               :last (last xs)
               (nth xs from))))
 
+(defn default-compare [a b]
+  (if (= a b)
+    0
+    (if (< a b) -1 1)))
+
 (defn- compare-action [f action a b]
   (case action
     :equal (zero? (f a b))
@@ -20,12 +25,12 @@
     (throw (Exception. "no implemention"))))
 
 (defn compare-value
+  ([action]
+   (partial compare-action compare-value action))
   ([action a b]
    (compare-action compare-value action a b))
   ([a b]
-   (if (= a b)
-     0
-     (if (< a b) -1 1))))
+   (default-compare a b)))
 
 (defmacro ->m [& xs]
   (reduce #(assc %1 (keyword %2) %2) {} xs))
