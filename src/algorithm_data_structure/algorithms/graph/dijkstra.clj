@@ -4,7 +4,7 @@
             [algorithm-data-structure.data-structures.priority-queue :as queue]
             [algorithm-data-structure.util :refer :all]))
 
-(defn search [ggraph start-vertex]
+(defn run [ggraph start-vertex]
   (let [[distances previous-vertices] (reduce (fn [[d p] v]
                                                 [(assoc d (gvertex/get-key v) Integer/MAX_VALUE)
                                                  (assoc p (gvertex/get-key v) nil)])
@@ -53,7 +53,7 @@
                  previous-vertices
                  (assoc visited-vertices (gvertex/get-key current-vertex) current-vertex)))))))
 
-(defn search-with-local-mutable
+(defn run-with-local-mutable
   "much more simple than pure fn version"
   [ggraph start-vertex]
   (let [distances (atom {})

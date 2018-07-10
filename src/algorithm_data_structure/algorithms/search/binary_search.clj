@@ -1,10 +1,10 @@
 (ns algorithm-data-structure.algorithms.search.binary-search
   (:require [algorithm-data-structure.util :refer :all]))
 
-(defn search [sorted-array seek-element
-              & {:keys [equal less-then]
-                 :or {equal (compare-value :equal)
-                      less-then (compare-value :less-then)}}]
+(defn run [sorted-array seek-element
+           & {:keys [equal less-then]
+              :or {equal (compare-value :equal)
+                   less-then (compare-value :less-then)}}]
   (loop [start-index 0
          end-index (dec (count sorted-array))]
     (if (> start-index end-index)
