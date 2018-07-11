@@ -31,9 +31,7 @@
   (keys (:edges ggraph)))
 
 (defn get-edge-key [edge k]
-  (->> edge
-       k
-       gvertex/get-key))
+  (->> edge k gvertex/get-key))
 
 (defn get-edge-vertex [ggraph edge k]
   (->> (get-edge-key edge k)
@@ -41,9 +39,7 @@
 
 (defn add-edge [ggraph edge]
   (let [sf (fn [g k v]
-             (assoc-vertex-by-key g
-                                  (get-edge-key edge k)
-                                  v))
+             (assoc-vertex-by-key g (get-edge-key edge k) v))
         vertex-fn (fn [g k]
                     (if-let [vertex (get-edge-vertex g edge k)]
                       [g vertex]
@@ -106,8 +102,7 @@
                      (reduce #(assoc-in %1
                                         [i ((gvertex/get-key %2) vertices-indices)]
                                         (:weight (find-edge ggraph vertex %2)))
-                             vs
-                             (gvertex/get-neighbors vertex))])
+                             vs (gvertex/get-neighbors vertex))])
                   [0 adjacency-matrix]
                   vertices))))
 
