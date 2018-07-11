@@ -58,7 +58,7 @@
   (let [visited-set (atom {})
         articulation-points-set (atom {})
         discovery-time (atom 0)
-        start-vertex (ggraph/get-all-vertices ggraph)
+        start-vertex (first (ggraph/get-all-vertices ggraph))
         dsf-callbacks {:enter-vertex (enter-vertex visited-set discovery-time)
                        :leave-vertex (leave-vertex visited-set articulation-points-set start-vertex)
                        :allow-traversal (allow-traversal visited-set)}]
