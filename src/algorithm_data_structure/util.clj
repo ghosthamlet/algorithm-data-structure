@@ -34,3 +34,6 @@
 
 (defmacro ->m [& xs]
   (reduce #(assc %1 (keyword %2) %2) {} xs))
+
+(defn includes [xs x]
+  (some #(= x %) xs))
