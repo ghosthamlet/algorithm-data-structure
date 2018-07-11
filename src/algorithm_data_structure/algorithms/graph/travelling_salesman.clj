@@ -36,6 +36,9 @@
                           [(idx-f (dec cycle-index))
                            (idx-f cycle-index)])))))))
 
+(defn includes [vs v]
+  (some #(= (gvertex/get-key v) (gvertex/get-key %)) vs))
+
 (defn run [ggraph]
   (let [start-vertex (first (ggraph/get-all-vertices ggraph))
         all-possible-cycles (filter #(includes (->> % count dec % gvertex/get-neighbors) start-vertex)
