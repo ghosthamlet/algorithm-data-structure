@@ -18,7 +18,7 @@
   (reduce #(set-value %1 %2) bf (get-hash-values bf item)))
 
 (defn may-contain [bf item]
-  (every #(get-value bf %) (get-hash-values bf item)))
+  (every? #(get-value bf %) (get-hash-values bf item)))
 
 (defn hash1 [bf item]
   (mod (reduce #(let [hash (->> %2 int (+ (bit-shift-left %1 5) %1))]
