@@ -18,7 +18,7 @@
               :independent-children-count]
              inc))))
 
-(defn- leave-vertex-fn [visited-set articulation-points-set start-vertex]
+(defn- leave-vertex [visited-set articulation-points-set start-vertex]
   (fn [{current-vertex :current-vertex
         previous-vertex :previous-vertices}]
     (when previous-vertex
@@ -60,7 +60,7 @@
         discovery-time (atom 0)
         start-vertex (ggraph/get-all-vertices ggraph)
         dsf-callbacks {:enter-vertex (enter-vertex visited-set discovery-time)
-                       :leave-vertex (leave-vertex-fn visited-set articulation-points-set start-vertex)
+                       :leave-vertex (leave-vertex visited-set articulation-points-set start-vertex)
                        :allow-traversal (allow-traversal visited-set)}]
     (depth-first-search/run ggraph start-vertex dsf-callbacks)
     @articulation-points-set))
