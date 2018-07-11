@@ -21,7 +21,7 @@
                    leave-vertex stub-callback}
               :as callbacks}]
   (let [previous-vertex nil
-        rec (fn [current-vertex previous-vertex]
+        rec (fn rec [current-vertex previous-vertex]
               (enter-vertex (->m current-vertex previous-vertex))
               (doseq [next-vertex (ggraph/get-neighbors ggraph current-vertex)]
                 (if (allow-traversal (->m previous-vertex current-vertex next-vertex))

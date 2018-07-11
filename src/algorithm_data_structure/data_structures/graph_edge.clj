@@ -1,4 +1,5 @@
 (ns algorithm-data-structure.data-structures.graph-edge
+  (:refer-clojure :exclude [reverse])
   (:require [algorithm-data-structure.data-structures.graph-vertex :as gvertex]))
 
 (defn create

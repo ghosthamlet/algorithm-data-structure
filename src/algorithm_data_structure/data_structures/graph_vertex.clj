@@ -1,6 +1,8 @@
 (ns algorithm-data-structure.data-structures.graph-vertex
   (:require [algorithm-data-structure.data-structures.linked-list :as llist]))
 
+(declare get-key)
+
 (defn compare-edge
   [a b]
   (if (= (get-key a) (get-key b))
@@ -31,17 +33,17 @@
   (count (llist/->array (:edges gvertex))))
 
 (defn has-edge [gvertex required-edge]
-  (bool (llist/find* (:edges gvertex)
-                     nil
-                     #(= % required-edge)
-                     compare-edge)))
+  (boolean (llist/find* (:edges gvertex)
+                        nil
+                        #(= % required-edge)
+                        compare-edge)))
 
 (defn has-neighbor [gvertex vertex]
-  (bool (llist/find* (:edges gvertex)
-                     nil
-                     #(or (= (:start-vertex %) vertex)
-                          (= (:end-vertex %) vertex))
-                     compare-edge)))
+  (boolean (llist/find* (:edges gvertex)
+                        nil
+                        #(or (= (:start-vertex %) vertex)
+                             (= (:end-vertex %) vertex))
+                        compare-edge)))
 
 (defn find-edge [gvertex vertex]
   (when-let [edge (llist/find* (:edges gvertex)

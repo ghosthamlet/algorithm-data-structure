@@ -1,4 +1,5 @@
 (ns algorithm-data-structure.data-structures.graph
+  (:refer-clojure :exclude [reverse])
   (:require [algorithm-data-structure.data-structures.graph-edge :as gedge]
             [algorithm-data-structure.data-structures.graph-vertex :as gvertex]))
 
@@ -91,7 +92,7 @@
 (defn get-vertices-indices [ggraph]
   (last (reduce (fn [[i vs] v]
                   [(inc i)
-                   (assoc vs (gvertex/get-key %2) i)])
+                   (assoc vs (gvertex/get-key v) i)])
                 [0 {}]
                 (get-all-vertices ggraph))))
 

@@ -11,7 +11,7 @@
            {:discovery-time discovery-time
             :low-discovery-time discovery-time})))
 
-(defn- leave-vertex [visited-set bridges start-vertex]
+(defn- leave-vertex [ggraph visited-set bridges start-vertex]
   (fn [{current-vertex :current-vertex
         previous-vertex :previous-vertices}]
     (let [previous-key (gvertex/get-key previous-vertex)
@@ -54,7 +54,7 @@
         discovery-time (atom 0)
         start-vertex (first (ggraph/get-all-vertices ggraph))
         dsf-callbacks {:enter-vertex (enter-vertex visited-set discovery-time)
-                       :leave-vertex (leave-vertex visited-set bridges start-vertex)
+                       :leave-vertex (leave-vertex ggraph visited-set bridges start-vertex)
                        :allow-traversal (allow-traversal visited-set)}]
     (depth-first-search/run ggraph start-vertex dsf-callbacks)
     @bridges))

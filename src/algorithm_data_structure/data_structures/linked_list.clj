@@ -91,11 +91,10 @@
 
 (defn delete-head [llist]
   (if (:head llist)
-    (let [head (when-let [hn (get-in llist [:head :next])]
-                 hn)]
+    (let [head (get-in llist [:head :next])]
       [(assoc llist
-              :head hn
-              :tail (when hn (:tail llist)))
+              :head head
+              :tail (when head (:tail llist)))
        (:head llist)])
     [llist nil]))
 

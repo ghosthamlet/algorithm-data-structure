@@ -33,7 +33,7 @@
    (default-compare a b)))
 
 (defmacro ->m [& xs]
-  (reduce #(assc %1 (keyword %2) %2) {} xs))
+  (reduce #(assoc %1 (keyword %2) %2) {} xs))
 
 (defn includes [xs x]
   (some #(= x %) xs))
