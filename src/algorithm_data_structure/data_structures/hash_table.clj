@@ -21,7 +21,7 @@
         bucket-linked-list (get-in ht [:buckets key-hash])
         node (llist/find* bucket-linked-list
                           nil #(= (:key %) key))]
-    (update-in (if (not node)
+    (update-in (if-not node
                  ht
                  (update-in ht [:buckets key-hash]
                             llist/delete (:value node)))

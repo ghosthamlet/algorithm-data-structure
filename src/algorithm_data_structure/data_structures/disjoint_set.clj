@@ -7,7 +7,7 @@
 
 (defn make-set [ds item-value]
   (let [disjoint-set-item (dsi/create item-value (:key-callback ds))]
-    (if (not (get-in ds [:items (dsi/get-key disjoint-set-item)]))
+    (if-not (get-in ds [:items (dsi/get-key disjoint-set-item)])
       (assoc-in ds [:items
                     (dsi/get-key disjoint-set-item)] disjoint-set-item)
       ds)))
@@ -18,8 +18,7 @@
 
 (defn find* [ds item-value]
   (let [required-disjoint-item (get-in ds [:items (dsi-key ds item-value)])]
-    (if (not required-disjoint-item)
-      nil
+    (when required-disjoint-item
       (-> required-disjoint-item dsi/get-root dis/get-key))))
 
 (defn union [ds value-a value-b]
@@ -37,7 +36,7 @@
           (f root-b root-a)
           (f root-a root-b))))))
 
-(defn is-same-set [ds value-a value-b]
+(defn same-set? [ds value-a value-b]
   (let [root-key-a (find* ds value-a)
         root-key-b (find* ds value-b)]
     (if (or (nil? root-key-a) (nil? root-key-b))

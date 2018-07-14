@@ -15,7 +15,7 @@
   (get-in bf [:storage index]))
 
 (defn insert* [bf item]
-  (reduce #(set-value %1 %2) bf (get-hash-values bf item)))
+  (reduce set-value bf (get-hash-values bf item)))
 
 (defn may-contain [bf item]
   (every? #(get-value bf %) (get-hash-values bf item)))

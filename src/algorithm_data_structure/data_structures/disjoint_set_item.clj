@@ -11,11 +11,11 @@
     ((:key-callback dsi) (:value dsi))
     (:value dsi)))
 
-(defn is-root [dsi]
+(defn root? [dsi]
   (nil? (:parent dsi)))
 
 (defn get-root [dsi]
-  (if (is-root dsi)
+  (if (root? dsi)
     dsi
     (get-root (:parent dsi))))
 
