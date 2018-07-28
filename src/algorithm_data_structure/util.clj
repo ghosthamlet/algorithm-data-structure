@@ -37,3 +37,18 @@
 
 (defn includes [xs x]
   (some #(= x %) xs))
+
+(defn get-in* [a ks]
+  (reduce #(@%1 %2) a ks))
+
+(defn assoc* [a k v]
+  (swap! a assoc k v)
+  a)
+
+(defn assoc-in* [a ks v]
+  (assoc* (get-in* a (drop-last ks)) (last ks) v)
+  a)
+
+(defmacro es6-let
+  "(let [{a [b alias default] c} {:a 0 :b 2}]"
+  [])

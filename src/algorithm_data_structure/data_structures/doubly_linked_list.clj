@@ -21,9 +21,10 @@
       (do
         (reset! (:head dll) new-node)
         (reset! (:tail dll) new-node))
-      (do (reset! (:next @(:tail dll)) new-node)
-          (reset! (:previous new-node) @(:tail dll))
-          (reset! (:tail dll) new-node)))
+      (do
+        (reset! (:next @(:tail dll)) new-node)
+        (reset! (:previous new-node) @(:tail dll))
+        (reset! (:tail dll) new-node)))
     dll))
 
 (defn delete [dll value]
