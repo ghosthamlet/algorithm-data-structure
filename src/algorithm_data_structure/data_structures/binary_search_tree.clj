@@ -15,6 +15,23 @@
 (defn find* [bst value]
   (bstn/find* (:root bst) value))
 
+(defn find-path [bst node]
+  (last (find* bst (:value node))))
+
+(defn find-parent [bst node]
+  (->> [:value] (get-in node) (find* bst) last (parent bst)))
+
+(defn uncle [bst node]
+  (when-let [parent-node (find-parent bst node)]
+    (when-let [parent-node2 (find-parent bst parent-node)]
+      (when-not (or (not (:left parent-node2)) (not (:right parent-node2)))
+        (if (equal bst parent-node (:left parent-node2))
+          (:right parent-node2)
+          (:left parent-node2))))))
+
+(defn assoc* [bst node]
+  (assoc-in bst (concat [:root] (find-path bst node)) node))
+
 (defn contains* [bst value]
   (bstn/contains* (:root bst) value))
 

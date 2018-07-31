@@ -10,6 +10,7 @@
    {:left nil
     :right nil
     ;; :parent purely functional data can't reference self
+    :has-parent true
     :value value
     :meta (ht/create)
     :node-comparator comparator-fns}))
@@ -44,7 +45,7 @@
   (- (right-height btn) (left-height btn)))
 
 (defn uncle [btn]
-  (throw (Exception. "Not implemented, purely functional data can't reference self, so can't get self's parent and relate data")))
+  (throw (Exception. "Not implemented, purely functional data can't reference self, so can't get self's parent and relate data, use bst/uncle")))
 
 (defn set-value [btn value]
   (assoc btn :value value))

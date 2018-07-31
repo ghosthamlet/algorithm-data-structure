@@ -1,4 +1,6 @@
-# algorithm-data-structure
+# algorithm-data-structure 
+WIP, and will add unit test in the future.
+
 Algorithms and (Probabilistic) data structures Clojure version Port from 
 https://github.com/trekhleb/javascript-algorithms
 https://github.com/tylertreat/BoomFilters 

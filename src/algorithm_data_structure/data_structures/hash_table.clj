@@ -15,7 +15,7 @@
   (let [hash (reduce #(+ %1 (int %2)) 0 key)]
     (->> ht :buckets count (mod hash))))
 
-(defn set [ht key value]
+(defn set* [ht key value]
   (let [key-hash (hash ht key)
         ht (assoc-in ht [:keys key] key-hash)
         bucket-linked-list (get-in ht [:buckets key-hash])
