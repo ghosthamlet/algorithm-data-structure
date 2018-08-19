@@ -20,10 +20,35 @@
         prev-segment (atom nil)
         current-segment-hash (atom nil)
         wlen (count word)
-        times (inc (- (count text) wlen))
         ret (atom -1)]
+    (doseq [char-index (range (inc (- (count text) wlen)))
+            :when (= @ret -1)
+            :let [current-segment (.substring text char-index (+ char-index wlen))]]
+      (if (nil? @current-segment-hash)
+        (reset! current-segment-hash (hash-word current-segment))
+        (swap! current-segment-hash #(re-hash-word % @prev-segment current-segment)))
+      (reset! prev-segment @current-segment)
+      (when (= word-hash @current-segment-hash)
+        (let [number-of-matches (atom 0)]
+          (dotimes [deep-char-index wlen]
+            (when (= (nth word deep-char-index)
+                     (nth text (+ char-index deep-char-index)))
+              (swap! number-of-matches inc)))
+          (when (= @number-of-matches wlen)
+            (reset! ret char-index)))))
+    @ret))
+
+(defn run-with-loop [text word]
+  (let [word-hash (hash-word word)
+        prev-segment (atom nil)
+        current-segment-hash (atom nil)
+        wlen (count word)
+        ret (atom -1)]
+    ;; use doseq is more simple
     (loop [char-index 0]
-      (if (or (= char-index times) (not= @ret -1))
+      (if (or (= char-index times)
+              ;; simulate break
+              (not= @ret -1))
         @ret
         (let [current-segment (.substring text char-index (+ char-index wlen))]
           (if (nil? @current-segment-hash)
