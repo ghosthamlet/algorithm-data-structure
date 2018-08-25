@@ -28,10 +28,8 @@
                                                      (rest right-array)
                                                      (conj sorted-array minimum-element)))))]
                                     (concat sorted-array
-                                            (if (> (count left-array) 0)
-                                              left-array
-                                              nil)
-                                            (if (> (count right-array) 0)
-                                              right-array
-                                              nil))))]
+                                            (when (> (count left-array) 0)
+                                              left-array)
+                                            (when (> (count right-array) 0)
+                                              right-array))))]
         (merge-sorted-arrays (run left-array) (run right-array))))))

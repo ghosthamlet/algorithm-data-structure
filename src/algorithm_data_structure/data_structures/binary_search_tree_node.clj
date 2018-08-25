@@ -81,10 +81,9 @@
       (let [next-bigger-node (find-min right-child)
             bigger-value (:value next-bigger-node)]
         (if-not (equal bstn next-bigger-node right-child)
-          (do
-            [(-> bstn (remove* bigger-value) first
-                 (set-child-value bigger-value remove-path))
-             true])
+          [(-> bstn (remove* bigger-value) first
+               (set-child-value bigger-value remove-path))
+           true]
           [(-> bstn (set-child-value (:value right-child) remove-path)
                (set-child-right (:right right-child) remove-path))
            true]))

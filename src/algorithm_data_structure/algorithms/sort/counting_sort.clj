@@ -8,7 +8,7 @@
       {:keys [less-then greater-than]} :comparator}]
   (let [olen (count original-array)
         detected-biggest-element (atom biggest-element)]
-    (when (not @detected-biggest-element)
+    (when-not @detected-biggest-element
       (doseq [element original-array]
         (visiting-callback element)
         (when (greater-than element @detected-biggest-element)
