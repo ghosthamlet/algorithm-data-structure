@@ -14,7 +14,7 @@
 (defn enqueue [queue value]
   (update queue :linked-list append value))
 
-(defn dequeue [queue value]
+(defn dequeue [queue]
   (let [[llist h] (-> queue :linked-list delete-head)]
     [{:linked-list llist} (when h (:value h))]))
 
