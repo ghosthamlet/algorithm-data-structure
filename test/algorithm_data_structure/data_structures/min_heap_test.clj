@@ -82,40 +82,40 @@
 
 (deftest poll-test
   (is (= [heap nil]
-         (heap/poll heap compare-value)))
+         (heap/poll heap)))
   (is (= [{:heap-container []} 29]
-         (heap/poll {:heap-container [29]} compare-value)))
+         (heap/poll {:heap-container [29]})))
   (is (= [{:heap-container [-20 -8 0 10 6 20 0 300 20]} -21]
-         (heap/poll heap2 compare-value))))
+         (heap/poll heap2))))
 
 (deftest add-test
   (testing "test add"
     (is (= {:heap-container [10]}
            (-> heap
-               (heap/add 10 compare-value))))
+               (heap/add 10))))
     (is (= {:heap-container [6 10]}
            (-> heap
-               (heap/add 10 compare-value)
-               (heap/add 6 compare-value))))
+               (heap/add 10)
+               (heap/add 6))))
     (is (= heap2
            (-> heap
-               (heap/add 10 compare-value)
-               (heap/add 20 compare-value)
-               (heap/add 20 compare-value)
-               (heap/add 300 compare-value)
-               (heap/add 0 compare-value)
-               (heap/add -8 compare-value)
-               (heap/add 0 compare-value)
-               (heap/add -20 compare-value)
-               (heap/add -21 compare-value)
-               (heap/add 6 compare-value))))))
+               (heap/add 10)
+               (heap/add 20)
+               (heap/add 20)
+               (heap/add 300)
+               (heap/add 0)
+               (heap/add -8)
+               (heap/add 0)
+               (heap/add -20)
+               (heap/add -21)
+               (heap/add 6))))))
 
 (deftest find*-test
   (is (= [3]
-         (heap/find* heap2 -8 compare-value nil)))
+         (heap/find* heap2 -8 nil)))
   (is (= [2 6]
-         (heap/find* heap2 0 compare-value nil))))
+         (heap/find* heap2 0 nil))))
 
 (deftest remove*-test
   (is (= {:heap-container [-21 -20 10 -8 6 20 20 300]}
-         (heap/remove* heap2 0 compare-value nil))))
+         (heap/remove* heap2 0 nil))))

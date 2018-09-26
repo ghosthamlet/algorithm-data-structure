@@ -1,71 +1,74 @@
 (ns algorithm-data-structure.data-structures.priority-queue
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/priority-queue"
   (:require [algorithm-data-structure.data-structures.min-heap :as heap]
+            [algorithm-data-structure.comparator :refer :all]
             [algorithm-data-structure.util :refer :all]))
 
-(defn- compare-priority-fn [queue]
-  (fn compare
-    ([action a b]
-     (compare-action compare action a b))
-    ([a b]
-     (let [p (prior queue)]
-       (compare-value (p a) (p b))))))
+(declare prior)
+
+(defrecord PriorityQueue [priorities])
 
 (defn create []
-  {:heap (heap/create)
-   :priorities {}})
+  (merge (PriorityQueue. {}) (heap/create)))
 
-(defn prior [queue]
-  (:priorities queue))
+(defmethod compare-value PriorityQueue [self a b]
+  (let [p (prior self)]
+    (compare-default self (p a) (p b))))
 
-(defn update-prior [queue f & args]
-  (apply update queue :priorities f args))
+(defn prior [self]
+  (:priorities self))
 
-(defn poll [queue]
-  (let [[heap item] (queue/poll (:heap queue)
-                                (compare-priority-fn queue))]
-    [(assoc queue :heap heap) item]))
+(defn update-prior [self f & args]
+  (apply update self :priorities f args))
+
+(defn poll [self]
+  (heap/poll self))
 
 (defn add
-  ([queue item]
-   (add queue item 0))
-  ([queue item priority]
-   (-> queue
-       (assoc-in
-        [:priorities item] priority)
-       (update
-        :heap heap/add item (compare-priority-fn queue)))))
+  ([self item]
+   (add self item 0))
+  ([self item priority]
+   (-> self
+       (assoc-in [:priorities item] priority)
+       (heap/add item))))
 
-(defn remove* [queue item custom-comparator]
-  (-> queue
-      :heap
-      (heap/remove* item (compare-priority-fn queue) custom-comparator)
-      ((partial assoc queue :heap))
+(defn remove* [self item custom-comparator]
+  (-> self
+      (heap/remove* item custom-comparator)
       (update-prior dissoc item)))
 
-(defn change-priority [queue item priority]
-  (-> queue
-      (remove* item compare-value)
+(defn change-priority [self item priority]
+  (-> self
+      (remove* item compare-default)
       (add item priority)))
 
-(defn find-by-value [queue item]
-  (-> queue
-      :heap
-      (heap/find* item (compare-priority-fn queue) compare-value)))
+(defn find-by-value [self item]
+  (-> self
+      (heap/find* item compare-default)))
 
-(defn has-value [queue item]
-  (-> queue
+(defn has-value [self item]
+  (-> self
       (find-by-value item)
       count
       pos?))
 
 ;; XXX: before every heap/action,
-;;      we have to assoc-compare to update queue in compare-priority-fn
+;;      we have to assoc-compare to update self in compare-priority-fn
 ;;      NO USED
 #_(defn assoc-compare
-    ([queue]
-     (assoc-compare queue (compare-priority-fn queue)))
-    ([queue f]
-     (-> queue
+    ([self]
+     (assoc-compare self (compare-priority-fn self)))
+    ([self f]
+     (-> self
          (assoc-in
           [:heap :compare] f)
          (assoc :compare f))))
+
+#_(defn- compare-priority-fn [self]
+    (fn compare
+      ([action a b]
+       (compare-action compare action a b))
+      ([a b]
+       (let [p (prior self)]
+         (compare-value (p a) (p b))))))
+
