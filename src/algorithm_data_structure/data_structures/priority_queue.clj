@@ -1,6 +1,6 @@
 (ns algorithm-data-structure.data-structures.priority-queue
   "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/priority-queue"
-  (:require [algorithm-data-structure.data-structures.min-heap :as heap]
+  (:require [algorithm-data-structure.data-structures.min-heap :as mh]
             [algorithm-data-structure.comparator :refer :all]
             [algorithm-data-structure.util :refer :all]))
 
@@ -9,7 +9,7 @@
 (defrecord PriorityQueue [priorities])
 
 (defn create []
-  (merge (PriorityQueue. {}) (heap/create)))
+  (merge (PriorityQueue. {}) (mh/create)))
 
 (defmethod compare-value PriorityQueue [self a b]
   (let [p (prior self)]
@@ -22,7 +22,7 @@
   (apply update self :priorities f args))
 
 (defn poll [self]
-  (heap/poll self))
+  (mh/poll self))
 
 (defn add
   ([self item]
@@ -30,11 +30,11 @@
   ([self item priority]
    (-> self
        (assoc-in [:priorities item] priority)
-       (heap/add item))))
+       (mh/add item))))
 
 (defn remove* [self item custom-comparator]
   (-> self
-      (heap/remove* item custom-comparator)
+      (mh/remove* item custom-comparator)
       (update-prior dissoc item)))
 
 (defn change-priority [self item priority]
@@ -44,7 +44,7 @@
 
 (defn find-by-value [self item]
   (-> self
-      (heap/find* item compare-default)))
+      (mh/find* item compare-default)))
 
 (defn has-value [self item]
   (-> self
@@ -52,7 +52,7 @@
       count
       pos?))
 
-;; XXX: before every heap/action,
+;; XXX: before every mh/action,
 ;;      we have to assoc-compare to update self in compare-priority-fn
 ;;      NO USED
 #_(defn assoc-compare
@@ -61,7 +61,7 @@
     ([self f]
      (-> self
          (assoc-in
-          [:heap :compare] f)
+          [:mh :compare] f)
          (assoc :compare f))))
 
 #_(defn- compare-priority-fn [self]

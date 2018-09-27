@@ -1,110 +1,144 @@
 (ns algorithm-data-structure.data-structures.linked-list
-  (:require [algorithm-data-structure.data-structures.linked-list-node :as llnode]))
+  (:require [algorithm-data-structure.data-structures.linked-list-node :as lln]
+            [algorithm-data-structure.comparator :refer :all]))
 
 (defn create []
   {:head nil
    :tail nil})
 
-(defn prepend [llist value]
-  (update llist
-          :head #(llnode/create value %)))
+(defn get-link-path [self]
+  (loop [next (:head self)
+         path [:head]]
+    (if-not next
+      path
+      (recur (:next next)
+             (conj path :next)))))
 
-(defn append [llist value]
-  (let [new-node (llnode/create value)]
-    (if-not (:head llist)
-      (assoc llist
+(defn prepend [self value]
+  (let [new-node (lln/create value (:head self))
+        self (assoc self
+                    :head new-node)]
+    (if-not (:tail self)
+      (assoc self
+             :tail new-node)
+      self)))
+
+(defn append [self value]
+  (let [new-node (lln/create value)]
+    (if-not (:head self)
+      (assoc self
              :head new-node
              :tail new-node)
-      (-> llist
-          (update-in
-           [:tail :next] new-node)
+      (-> self
+          (assoc-in
+           (get-link-path self) new-node)
           (assoc
            :tail new-node)))))
 
-(defn delete [llist value compare]
-  (if (:head llist)
-    (let [[llist deleted-node] (if (compare :equal
-                                            (get-in llist [:head :value])
-                                            value)
-                                 [(update llist :head :next)
-                                  (:head llist)]
-                                 [llist nil])
-          current-node (:head llist)
-          [current-node deleted-node] (if current-node
-                                        (loop [cnext (:next current-node)
-                                               current-node current-node
-                                               deleted-node deleted-node]
-                                          (if (nil? cnext)
-                                            [current-node deleted-node]
-                                            (let [[current-node deleted-node]
-                                                  (if (compare :equal
-                                                               (get-in current-node
-                                                                       [:next :value])
-                                                               value)
-                                                    [(update current-node
-                                                             :next :next)
-                                                     (:next current-node)]
-                                                    [(:next current-node)
-                                                     deleted-node])]
-                                              (recur (:next current-node)
-                                                     current-node
-                                                     deleted-node))))
-                                        [current-node deleted-node])
-          llist (if (compare :equal
-                             (get-in llist [:tail :value])
-                             value)
-                  (assoc llist :tail current-node)
-                  llist)]
-      [llist deleted-node])
-    [llist nil]))
+(defn delete [self value]
+  (if (:head self)
+    (let [[self deleted-node]
+          (loop [self self
+                 deleted-node nil]
+            (if (and (:head self)
+                     (equal self
+                            (get-in self [:head :value])
+                            value))
+              (recur (update self :head :next)
+                     (:head self))
+              [self deleted-node]))
+          current-node (:head self)
+          [self current-node deleted-node]
+          (if current-node
+            (loop [self self
+                   current-node current-node
+                   deleted-node deleted-node
+                   path [:head]]
+              (if (nil? (:next current-node))
+                [self current-node deleted-node]
+                (let [[self current-node deleted-node path]
+                      (if (equal self
+                                 (get-in current-node
+                                         [:next :value])
+                                 value)
+                        [(update-in self
+                                    path update :next :next)
+                         (update current-node :next :next)
+                         (:next current-node)
+                         path]
+                        [self
+                         (:next current-node)
+                         deleted-node
+                         (conj path :next)])]
+                  (recur self
+                         current-node
+                         deleted-node
+                         path))))
+            [self current-node deleted-node])
+          self (if (equal self
+                          (get-in self [:tail :value])
+                          value)
+                 (assoc self :tail current-node)
+                 self)]
+      [self deleted-node])
+    [self nil]))
 
-(defn find* [llist value callback compare]
-  (when (:head llist)
+(defn find* [self value callback]
+  (when (:head self)
     (loop [find? false
-           current-node (:head llist)
-           nnode current-node]
+           ret (:head self)
+           current-node (:head self)]
       (if find?
-        current-node
-        (when nnode
-          (recur (->> value
-                      (compare :equal
-                               (:value current-node))
-                      (and value)
-                      (or (and callback
-                               (callback (:value current-node)))))
-                 nnode
-                 (:next nnode)))))))
+        ret
+        (when current-node
+          (recur (-> value
+                     (and (equal self
+                                 (:value current-node) value))
+                     (or (and callback
+                              (callback (:value current-node)))))
+                 current-node
+                 (:next current-node)))))))
 
-(defn delete-tail [llist]
-  (if (= (:head llist) (:tail llist))
-    [(assoc llist
+(defn delete-tail [self]
+  (if (= (:head self) (:tail self))
+    [(assoc self
             :head nil
             :tail nil)
-     (:tail llist)]
-    (loop [current-node (:head llist)]
+     (:tail self)]
+    (loop [self self
+           current-node (:head self)
+           path [:head]]
       (if (:next current-node)
-        (recur (if (get-in current-node [:next :next])
+        (let [[self current-node path]
+              (if-not (get-in current-node [:next :next])
+                [(assoc-in self (conj path :next) nil)
+                 (assoc current-node :next nil)
+                 path]
+                [self
                  (:next current-node)
-                 (assoc current-node :next nil)))
-        [(assoc llist :tail current-node)
-         (:tail llist)]))))
+                 (conj path :next)])]
+          (recur self
+                 current-node
+                 path))
+        [(assoc self :tail current-node)
+         (:tail self)]))))
 
-(defn delete-head [llist]
-  (if (:head llist)
-    (let [head (get-in llist [:head :next])]
-      [(assoc llist
+(defn delete-head [self]
+  (if (:head self)
+    (let [head (get-in self [:head :next])]
+      [(assoc self
               :head head
-              :tail (when head (:tail llist)))
-       (:head llist)])
-    [llist nil]))
+              :tail (when head (:tail self)))
+       (:head self)])
+    [self nil]))
 
-(defn ->array [llist]
+(defn ->array [self]
   (loop [nodes []
-         current-node (:head llist)]
+         current-node (:head self)]
     (if (nil? current-node)
       nodes
       (recur (conj nodes current-node)
              (:next current-node)))))
 
-(defn ->string [llist callback]
-  (map #(llnode/->string % callback) (->array llist)))
+(defn ->string [self & [callback]]
+  (map #(lln/->string % callback) (->array self)))
