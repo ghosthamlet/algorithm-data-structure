@@ -1,4 +1,5 @@
 (ns algorithm-data-structure.data-structures.binary-search-tree
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/tree/binary-search-tree"
   (:require [algorithm-data-structure.data-structures.binary-search-tree-node :as bstn]))
 
 (defn create [node-value-compare-function]

@@ -1,4 +1,5 @@
-(ns algorithm-data-structure.util)
+(ns algorithm-data-structure.util
+  (:require [clojure.walk :as w]))
 
 (defn but-nth [xs pos]
   (vec (case pos
@@ -33,6 +34,9 @@
 (defmacro es6-let
   "(let [{a [b alias default] c} {:a 0 :b 2}]"
   [])
+
+(defn record->map [xs]
+  (w/postwalk #(if (record? %) (into {} %) %) xs))
 
 #_(defn- default-compare [a b]
     (if (= a b)

@@ -1,4 +1,5 @@
-(ns algorithm-data-structure.data-structures.linked-list-node)
+(ns algorithm-data-structure.data-structures.linked-list-node
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/linked-list")
 
 (defn create [value & [next]]
   {:value value

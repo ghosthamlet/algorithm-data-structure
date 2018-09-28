@@ -1,10 +1,15 @@
 (ns algorithm-data-structure.data-structures.linked-list
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/linked-list"
   (:require [algorithm-data-structure.data-structures.linked-list-node :as lln]
             [algorithm-data-structure.comparator :refer :all]))
 
+(defrecord LinkedList [head tail])
+
 (defn create []
-  {:head nil
-   :tail nil})
+  (LinkedList. nil nil))
+
+;; (defmethod compare-value LinkedList [self a b]
+;;   (compare-default self a b))
 
 (defn get-link-path [self]
   (loop [next (:head self)
@@ -40,6 +45,7 @@
     (let [[self deleted-node]
           (loop [self self
                  deleted-node nil]
+            (type self)
             (if (and (:head self)
                      (equal self
                             (get-in self [:head :value])
