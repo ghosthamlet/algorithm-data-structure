@@ -11,7 +11,7 @@
 (defn create []
   (merge (PriorityQueue. {}) (mh/create)))
 
-(defmethod compare-value PriorityQueue [self a b]
+(defmethod compare-value [PriorityQueue Object] [self a b]
   (let [p (prior self)]
     (compare-default self (p a) (p b))))
 

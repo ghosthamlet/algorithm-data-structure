@@ -7,8 +7,10 @@
 
 (def default-hash-table-size 32)
 
+(defrecord HashTableNode [key value])
+
 ;; HashTable may contain value with diff type, and compare just used equal
-(defmethod compare-value LinkedList [self a b]
+(defmethod compare-value [LinkedList HashTableNode] [self a b]
   (if (= (:value a) (:value b)) 0 -1))
 
 (defn create
@@ -34,7 +36,7 @@
                                          (:value node))]
                    (assoc-in self [:buckets key-hash] ll)))
                [:buckets key-hash]
-               ll/append (->m key value))))
+               ll/append (HashTableNode. key value))))
 
 (defn delete [self key]
   (let [key-hash (hash self key)

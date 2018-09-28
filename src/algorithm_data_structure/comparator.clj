@@ -6,7 +6,8 @@
     (< a b) -1
     :else 1))
 
-(defmulti compare-value (fn [self _ _] (type self)))
+(defmulti compare-value (fn [self a _]
+                          [(type self) (type a)]))
 
 (defmethod compare-value :default [self a b]
   (compare-default self a b))

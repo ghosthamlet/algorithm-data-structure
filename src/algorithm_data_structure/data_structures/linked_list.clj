@@ -8,9 +8,6 @@
 (defn create []
   (LinkedList. nil nil))
 
-;; (defmethod compare-value LinkedList [self a b]
-;;   (compare-default self a b))
-
 (defn get-link-path [self]
   (loop [next (:head self)
          path [:head]]
