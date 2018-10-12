@@ -1,10 +1,17 @@
 (ns algorithm-data-structure.comparator)
 
 (defn compare-default [_ a b]
-  (cond
-    (= a b) 0
-    (< a b) -1
-    :else 1))
+  (if (and (instance? Number a) (instance? Number b))
+    (cond
+      (= a b) 0
+      (< a b) -1
+      :else 1)
+    (do
+      (prn "Warning: Compare value is not number, using default comparator,
+            this can't used for other compare except equal.")
+      (cond
+       (= a b) 0
+       :else 1))))
 
 (defmulti compare-value (fn [self a _]
                           [(type self) (type a)]))

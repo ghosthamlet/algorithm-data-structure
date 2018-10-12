@@ -1,100 +1,92 @@
 (ns algorithm-data-structure.data-structures.binary-search-tree-node
   "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/tree/binary-search-tree"
-  (:require [algorithm-data-structure.data-structures.binary-tree-node :as btn]))
+  (:require [algorithm-data-structure.data-structures.binary-tree-node :as btn]
+            [algorithm-data-structure.comparator :refer :all]))
+
+(declare find-min)
 
 (defn create
-  ([] (create nil nil))
-  ([value] (create value nil))
-  ([value comparator-function]
-   ;; XXX: merge parent btn data to child mimic inheritance
-   ;;      after merge, parent fns on merged data must not reset
-   ;;      or recreate the whole data or it will lost the child data
-   (merge (btn/create value)
-          {:compare-function comparator-function
-           :node-value-comparator comparator-function})))
+  ([] (create nil))
+  ([value]
+   (btn/create value)))
 
-(defn- compare* [bstn type]
-  (get-in bstn [:node-value-comparator type]))
-
-(defn- equal [bstn a b]
-  ((compare* bstn :equal) a b))
-
-(defn- less-then [bstn a b]
-  ((compare* bstn :less-then) a b))
-
-(defn- greater-then [bstn a b]
-  ((compare* bstn :greater-then) a b))
-
-(defn insert [bstn value]
-  (let [current-value (:value bstn)
-        f #(if (%1 bstn)
-             (insert (%1 bstn) value)
-             (let [new-node (create value (:compare-function bstn))]
-               (%2 bstn new-node)))]
+(defn insert [self value]
+  (let [current-value (:value self)
+        f #(if (%1 self)
+             (%2 self (insert (%1 self) value))
+             (let [new-node (create value)]
+               (%2 self new-node)))]
     (cond
-      (equal bstn current-value nil) (assoc bstn :value value)
-      (less-then bstn value current-value) (f :left btn/set-left)
-      (greater-then bstn value current-value) (f :right btn/set-right))))
+      (equal self current-value nil) (assoc self :value value)
+      (less-then self value current-value) (f :left btn/set-left)
+      (greater-than self value current-value) (f :right btn/set-right))))
 
-(defn find* [bstn value]
-  (loop [bstn bstn
+(defn find* [self value]
+  (loop [self self
          node-path []]
-    (let [current-value (:value bstn)]
+    (let [current-value (:value self)]
      (cond
-       (equal bstn value current-value)
-       [bstn node-path]
-       (and (less-then bstn value current-value) (:left bstn))
-       (recur (:left bstn) (conj node-path :left))
-       (and (greater-then bstn value current-value) (:right bstn))
-       (recur (:right bstn) (conj node-path :right))
+       (equal self value current-value)
+       [self node-path]
+       (and (less-then self value current-value) (:left self))
+       (recur (:left self) (conj node-path :left))
+       (and (greater-than self value current-value) (:right self))
+       (recur (:right self) (conj node-path :right))
        :else [nil []]))))
 
-(defn contains* [bstn value]
-  (-> bstn (find* value) first boolean))
+(defn contains?* [self value]
+  (-> self (find* value) first boolean))
 
-(defn- set-child-value [bstn value node-path]
-  (update-in bstn node-path btn/set-value value))
+(defn- set-child-value [self value node-path]
+  (update-in self node-path btn/set-value value))
 
-(defn- set-child-right [bstn value node-path]
-  (update-in bstn node-path btn/set-right value))
+(defn- set-child-right [self value node-path]
+  (update-in self node-path btn/set-right value))
 
-(defn- remove-child [bstn node-to-remove remove-path]
-  (update-in bstn (drop-last remove-path)
-             btn/remove-child node-to-remove))
+(defn- remove-child [self node-to-remove remove-path]
+  (if (> (count remove-path) 1)
+    (update-in self (drop-last remove-path)
+               #(first (btn/remove-child % node-to-remove)))
+    (first (btn/remove-child self node-to-remove))))
 
-(defn- replace-child [bstn node-to-remove child-node remove-path]
-  (update-in bstn (drop-last remove-path)
-             btn/replace-child node-to-remove child-node))
+(defn- replace-child [self node-to-remove child-node remove-path]
+  (if (> (count remove-path) 1)
+    (update-in self (drop-last remove-path)
+               #(first (btn/replace-child % node-to-remove child-node)))
+    (first (btn/replace-child self node-to-remove child-node))))
 
-(defn remove* [bstn value]
-  (let [[node-to-remove remove-path] (find* bstn value)
+(defn remove* [self value]
+  (let [[node-to-remove remove-path] (find* self value)
         _ (when-not node-to-remove
             (throw (Exception. "Item not found in the tree")))
-        has-parent (> (count remove-path) 1)
+        has-parent (> (count remove-path) 0)
         right-child (:right node-to-remove)
         left-child (:left node-to-remove)]
     (cond
       (and (not left-child) (not right-child))
       (if has-parent
-        [(remove-child bstn node-to-remove remove-path) true]
+        [(remove-child self node-to-remove remove-path) true]
         [(btn/set-value node-to-remove nil) true])
       (and left-child right-child)
       (let [next-bigger-node (find-min right-child)
             bigger-value (:value next-bigger-node)]
-        (if-not (equal bstn next-bigger-node right-child)
-          [(-> bstn (remove* bigger-value) first
+        (if-not (equal self next-bigger-node right-child)
+          [(-> self (remove* bigger-value) first
                (set-child-value bigger-value remove-path))
            true]
-          [(-> bstn (set-child-value (:value right-child) remove-path)
+          [(-> self (set-child-value (:value right-child) remove-path)
                (set-child-right (:right right-child) remove-path))
            true]))
       :else
       (let [child-node (or left-child right-child)]
         (if has-parent
-          [(replace-child bstn node-to-remove child-node remove-path) true]
-          [(copy-node child-node node-to-remove) true])))))
+          [(replace-child self node-to-remove child-node remove-path) true]
+          [(btn/copy-node child-node node-to-remove) true])))))
 
-(defn find-min [bstn]
-  (if-not (:left bstn)
-    bstn
-    (recur (:left bstn))))
+(defn find-min [self]
+  (if-not (:left self)
+    self
+    (recur (:left self))))
+
+(defn ->string [self]
+  (btn/->string self))

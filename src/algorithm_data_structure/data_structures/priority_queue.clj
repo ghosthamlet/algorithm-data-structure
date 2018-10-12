@@ -9,6 +9,9 @@
 (defrecord PriorityQueue [priorities])
 
 (defn create []
+  ;; XXX: merge parent data to child mimic inheritance
+  ;;      after merge, parent fns on merged data must not reset
+  ;;      or recreate the whole data or it will lost the child data
   (merge (PriorityQueue. {}) (mh/create)))
 
 (defmethod compare-value [PriorityQueue Object] [self a b]

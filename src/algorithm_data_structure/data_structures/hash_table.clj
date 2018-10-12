@@ -5,7 +5,7 @@
             [algorithm-data-structure.util :refer :all])
   (:import [algorithm_data_structure.data_structures.linked_list LinkedList]))
 
-(def default-hash-table-size 32)
+(def default-hash-table-size 3)
 
 (defrecord HashTableNode [key value])
 
