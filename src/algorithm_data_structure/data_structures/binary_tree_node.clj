@@ -5,6 +5,8 @@
             [algorithm-data-structure.comparator :refer :all]
             [algorithm-data-structure.util :refer :all]))
 
+(declare height)
+
 (defn create
   ([] (create nil))
   ([value]
@@ -19,12 +21,12 @@
 (defn left-height [self]
   (if-not (:left self)
     0
-    (inc (left-height (:left self)))))
+    (inc (height (:left self)))))
 
 (defn right-height [self]
   (if-not (:right self)
     0
-    (inc (right-height (:right self)))))
+    (inc (height (:right self)))))
 
 (defn height [self]
   (Math/max (left-height self) (right-height self)))
