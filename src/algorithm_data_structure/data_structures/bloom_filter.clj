@@ -1,4 +1,5 @@
-(ns algorithm-data-structure.data-structures.bloom-filter)
+(ns algorithm-data-structure.data-structures.bloom-filter
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/bloom-filter")
 
 (declare hash1 hash2 hash3 get-hash-values)
 

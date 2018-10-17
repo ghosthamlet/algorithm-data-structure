@@ -1,4 +1,5 @@
-(ns algorithm-data-structure.data-structures.doubly-linked-list-node)
+(ns algorithm-data-structure.data-structures.doubly-linked-list-node
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/doubly-linked-list")
 
 (defn create
   ([value] (create value (atom nil) (atom nil)))

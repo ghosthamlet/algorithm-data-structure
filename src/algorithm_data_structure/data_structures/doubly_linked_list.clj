@@ -1,4 +1,5 @@
 (ns algorithm-data-structure.data-structures.doubly-linked-list
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/doubly-linked-list"
   (:require [algorithm-data-structure.data-structures.doubly-linked-list-node :as dlln]))
 
 (defn create [comparator-function]
