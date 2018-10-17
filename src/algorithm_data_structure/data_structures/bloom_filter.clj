@@ -6,42 +6,42 @@
   ([] (create 100))
   ([size]
    {:size size
-    :storage (vec (map (constantly false) (range size)))}))
+    :storage (vec (repeat 100 false))}))
 
-(defn- set-value [bf index]
-  (assoc-in bf [:storage index] true))
+(defn- set-value [self index]
+  (assoc-in self [:storage index] true))
 
-(defn- get-value [bf index]
-  (get-in bf [:storage index]))
+(defn- get-value [self index]
+  (get-in self [:storage index]))
 
-(defn insert [bf item]
-  (reduce set-value bf (get-hash-values bf item)))
+(defn insert [self item]
+  (reduce set-value self (get-hash-values self item)))
 
-(defn may-contain [bf item]
-  (every? #(get-value bf %) (get-hash-values bf item)))
+(defn may-contain [self item]
+  (every? #(get-value self %) (get-hash-values self item)))
 
-(defn hash1 [bf item]
-  (->> bf
+(defn hash1 [self item]
+  (->> self
        :size
        (mod (reduce #(let [hash (->> %2 int (+ (bit-shift-left %1 5) %1))]
                        (Math/abs (bit-and hash hash)))
                     0 item))))
 
-(defn hash2 [bf item]
-  (->> bf
+(defn hash2 [self item]
+  (->> self
        :size
        (mod (reduce #(->> %2 int (+ (bit-shift-left %1 5) %1)) 5381 item))
        Math/abs))
 
-(defn hash3 [bf item]
-  (->> bf
+(defn hash3 [self item]
+  (->> self
        :size
        (mod (reduce #(let [hash (->> %2 int (+ (- (bit-shift-left %1 5) %1)))]
                        (bit-and hash hash))
                     0 item))
        Math/abs))
 
-(defn get-hash-values [bf item]
-  [(hash1 bf item)
-   (hash2 bf item)
-   (hash3 bf item)])
+(defn get-hash-values [self item]
+  [(hash1 self item)
+   (hash2 self item)
+   (hash3 self item)])
