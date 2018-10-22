@@ -12,8 +12,12 @@
   (when-let [node (get m key)]
     (assoc node :m m :key key)))
 
-(defn get-next [node] (create (:m node) (:next node)))
-(defn get-prev [node] (create (:m node) (:previous node)))
+(defn get-nodes-by-value [m value]
+  (map #(get-node m (first %))
+       (filter #(= (:value (second %)) value) m)))
+
+(defn get-next [node] (get-node (:m node) (:next node)))
+(defn get-prev [node] (get-node (:m node) (:previous node)))
 
 (defn ->string [self callback]
   (if callback

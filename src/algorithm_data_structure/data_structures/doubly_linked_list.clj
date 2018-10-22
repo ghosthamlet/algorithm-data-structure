@@ -5,21 +5,21 @@
             [algorithm-data-structure.comparator :refer :all]))
 
 (defprotocol PDoublyLinkedList
-  (get-head [this])
   (prepend [this value])
-  (get-tail [this])
   (append [this value])
-  (delete [this node])
-  (add-before [this node value])
-  (add-after [this node value])
-  (get-nth [this n])
-  (find* [this & {:keys [value callback]
-                  :or {value nil
-                       callback nil}}])
+  (delete [this value])
+  (find* [this value callback])
   (delete-tail [this])
   (delete-head [this])
   (->array [this])
-  (->string [this]))
+  (->string [this callback])
+
+  (delete-node [this node])
+  (get-head [this])
+  (get-tail [this])
+  (add-before [this node value])
+  (add-after [this node value])
+  (get-nth [this n]))
 
 (defn- seq* [m start next]
   (seq
@@ -36,7 +36,7 @@
     (equals [this dll]
       (and (instance? DoublyLinkedList dll)
            (= m (.m ^DoublyLinkedList dll))))
-    (hashCode [this] (hash (or this ())))
+    ;; (hashCode [this] (hash (or this ())))
   clojure.lang.Sequential
   clojure.lang.Counted
     (count [_] (count m))
@@ -50,31 +50,66 @@
       (and (sequential? dll)
            (= (seq dll) (seq this))))
     (cons [this value] (.append this value))
+
   PDoublyLinkedList
-    (get-head [_] (dlln/get-node m head))
     (prepend [this value]
       (let [new-key (Object.)
             m (when-> (assoc m new-key (dlln/create nil head value))
                 head (assoc-in [head :previous] new-key))
             tail (if tail tail new-key)]
         (DoublyLinkedList. m new-key tail)))
-    (get-tail [_] (dlln/get-node m tail))
     (append [this value]
       (if-let [tail (.get-tail this)]
         (.add-after this tail value)
         (.prepend this value)))
-    (delete [this {:keys [prev next key]}]
-      (if (m key)
-        (let [head (if prev head next)
-              tail (if next tail prev)
+    (delete [this value]
+      (reduce (fn [acc {:keys [previous next key]
+                        :as node}]
+                (.delete-node acc node)
+                #_(let [m (.m acc)
+                        head (.head acc)
+                        tail (.tail acc)]
+                    (if (m key)
+                      (let [head (if previous head next)
+                            tail (if next tail previous)
+                            m (when-> (dissoc m key)
+                                previous (assoc-in [previous :next] next)
+                                next (assoc-in [next :previous] previous))]
+                        (DoublyLinkedList. m head tail))
+                      acc)))
+              this (dlln/get-nodes-by-value m value)))
+    (find* [this value callback]
+      (let [callback (or callback equal)]
+        (if-let [node (when (and tail (callback this value (:value tail)))
+                        tail)]
+          node
+          (->> m
+               (filter #(callback this (:value (second %)) value))
+               first
+               second))))
+    (delete-tail [this]
+      (.delete-node this (.get-tail this)))
+    (delete-head [this]
+      (.delete-node this (.get-head this)))
+    (->array [this]
+      (seq this))
+    (->string [this callback]
+      (str (vec (->array this))))
+
+    (delete-node [this {:keys [previous next key]}]
+      (if (get m key)
+        (let [head (if previous head next)
+              tail (if next tail previous)
               m (when-> (dissoc m key)
-                  prev (assoc-in [prev :next] next)
-                  next (assoc-in [next :previous] prev))]
+                  previous (assoc-in [previous :next] next)
+                  next (assoc-in [next :previous] previous))]
           (DoublyLinkedList. m head tail))
         this))
+    (get-head [_] (dlln/get-node m head))
+    (get-tail [_] (dlln/get-node m tail))
     (add-after [this node value]
       (if (get m (:key node))
-        (let [{:keys [prev next key]} node
+        (let [{:keys [next key]} node
               new-key (Object.)
               m (when-> (-> (assoc m new-key (dlln/create key next value))
                             (assoc-in , [key :next] new-key))
@@ -94,29 +129,11 @@
                                                [(.tail self) :previous (- (.count self) n 1)])]
                           (nth (iterate #(get-in (.m self) [% next]) start) n))
                         (throw (IndexOutOfBoundsException.))))]
-        (dlln/get-node m (nth-key this n))))
-    (find* [this & {:keys [value callback]
-                    :or {value nil
-                         callback equal}}]
-      (if-let [node (when (and tail (equal this value (:value tail)))
-                      tail)]
-        node
-        (->> m
-             (filter #(equal (:value (second %)) value))
-             first
-             second)))
-    (delete-tail [this]
-      (.delete this (.get-tail this)))
-    (delete-head [this]
-      (.delete this (.get-head this)))
-    (->array [this]
-      (seq this))
-    (->string [this callback]
-      (str (map #(dlln/->string % callback) (.->array this)))))
+        (dlln/get-node m (nth-key this n)))))
 
 (defn create
   ([] (DoublyLinkedList. nil nil nil))
-  ([coll] (into (double-list) coll)))
+  ([coll] (into (create) coll)))
 
 
 
