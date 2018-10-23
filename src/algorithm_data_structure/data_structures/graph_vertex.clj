@@ -1,64 +1,64 @@
 (ns algorithm-data-structure.data-structures.graph-vertex
-  (:require [algorithm-data-structure.data-structures.linked-list :as llist]))
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/graph"
+  (:require [algorithm-data-structure.data-structures.linked-list :as ll]
+            [algorithm-data-structure.comparator :refer :all])
+  (:import [algorithm_data_structure.data_structures.linked_list LinkedList]))
 
 (declare get-key)
 
-(defn compare-edge
-  [a b]
-  (if (= (get-key a) (get-key b))
-    0
-    (if (< (get-key a) (get-key b)) -1 1)))
+(defrecord GraphVertex [value edges])
 
 (defn create [value]
-  {:value value
-   :edges (llist/create)})
+  (GraphVertex. value (ll/create)))
 
-(defn add-edge [gvertex edge]
-  (update gvertex :edges llist/append edge))
+(defmethod compare-value [LinkedList GraphVertex] [_ a b]
+  (compare-default nil (get-key a) (get-key b)))
 
-(defn delete-edge [gvertex edge]
-  (update gvertex :edges llist/delete edge compare-edge))
+(defn add-edge [self edge]
+  (update self :edges ll/append edge))
 
-(defn get-neighbors [gvertex]
+(defn delete-edge [self edge]
+  (update self :edges #(first (ll/delete % edge))))
+
+(defn get-neighbors [self]
   (map #(let [v (get-in % [:value :start-vertex])]
-          (if (= gvertex v)
+          ;; FIXME: vertex self and v have to be same object, not just eq value
+          (if (= (get-key self) (get-key v))
             (get-in % [:value :end-vertex])
             v))
-       (llist/->array (:edges gvertex))))
+       (ll/->array (:edges self))))
 
-(defn get-edges [gvertex]
-  (map :value (llist/->array (:edges gvertex))))
+(defn get-edges [self]
+  (map :value (ll/->array (:edges self))))
 
-(defn get-degree [gvertex]
-  (count (llist/->array (:edges gvertex))))
+(defn get-degree [self]
+  (count (ll/->array (:edges self))))
 
-(defn has-edge [gvertex required-edge]
-  (boolean (llist/find* (:edges gvertex)
-                        nil
-                        #(= % required-edge)
-                        compare-edge)))
+(defn has-edge [self required-edge]
+  (boolean (ll/find* (:edges self)
+                     nil
+                     #(= % required-edge))))
 
-(defn has-neighbor [gvertex vertex]
-  (boolean (llist/find* (:edges gvertex)
-                        nil
-                        #(or (= (:start-vertex %) vertex)
-                             (= (:end-vertex %) vertex))
-                        compare-edge)))
+(defn has-neighbor [self vertex]
+  (boolean (ll/find* (:edges self)
+                     nil
+                     #(or (= (:start-vertex %) vertex)
+                          (= (:end-vertex %) vertex)))))
 
-(defn find-edge [gvertex vertex]
-  (when-let [edge (llist/find* (:edges gvertex)
-                               nil
-                               #(or (= (:start-vertex %) vertex)
-                                    (= (:end-vertex %) vertex)))]
+(defn find-edge [self vertex]
+  (when-let [edge (ll/find* (:edges self)
+                            nil
+                            #(or (= (:start-vertex %) vertex)
+                                 (= (:end-vertex %) vertex)))]
     (:value edge)))
 
-(defn get-key [gvertex]
-  (:value gvertex))
+(defn get-key [self]
+  (:value self))
 
-(defn delete-all-edges [gvertex]
-  (reduce delete-edge gvertex (get-edges gvertex)))
+(defn delete-all-edges [self]
+  (reduce delete-edge self (get-edges self)))
 
-(defn ->string [gvertex callback]
+(defn ->string [self callback]
   (if callback
-    (callback (:value gvertex))
-    (str (:value gvertex))))
+    (callback (:value self))
+    (str (:value self))))

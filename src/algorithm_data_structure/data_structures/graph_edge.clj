@@ -1,6 +1,7 @@
 (ns algorithm-data-structure.data-structures.graph-edge
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/graph"
   (:refer-clojure :exclude [reverse])
-  (:require [algorithm-data-structure.data-structures.graph-vertex :as gvertex]))
+  (:require [algorithm-data-structure.data-structures.graph-vertex :as gv]))
 
 (defn create
   ([start-vertex end-vertex]
@@ -10,15 +11,15 @@
     :end-vertex end-vertex
     :weight weight}))
 
-(defn get-key [gedge]
+(defn get-key [self]
   (format "%s_%s"
-          (gvertex/get-key (:start-vertex gedge))
-          (gvertex/get-key (:end-vertex gedge))))
+          (gv/get-key (:start-vertex self))
+          (gv/get-key (:end-vertex self))))
 
-(defn reverse [gedge]
-  (assoc gedge
-         :start-vertex (:end-vertex gedge)
-         :end-vertex (:start-vertex gedge)))
+(defn reverse [self]
+  (assoc self
+         :start-vertex (:end-vertex self)
+         :end-vertex (:start-vertex self)))
 
-(defn ->string [gedge]
-  (get-key gedge))
+(defn ->string [self]
+  (get-key self))

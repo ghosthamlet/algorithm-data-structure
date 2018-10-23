@@ -1,5 +1,5 @@
 (ns algorithm-data-structure.data-structures.doubly-linked-list
-  "code from https://rosettacode.org/wiki/Doubly-linked_list/Definition#Clojure not the same as js version
+  "Adapted from https://rosettacode.org/wiki/Doubly-linked_list/Definition#Clojure not the same as js version
    https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/doubly-linked-list"
   (:require [algorithm-data-structure.data-structures.doubly-linked-list-node :as dlln]
             [algorithm-data-structure.comparator :refer :all]))
