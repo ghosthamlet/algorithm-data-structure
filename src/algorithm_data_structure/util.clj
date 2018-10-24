@@ -1,6 +1,8 @@
 (ns algorithm-data-structure.util
   (:require [clojure.walk :as w]))
 
+(def debug false)
+
 (defn but-nth [xs pos]
   (vec (case pos
          :first (next xs)

@@ -1,4 +1,5 @@
-(ns algorithm-data-structure.comparator)
+(ns algorithm-data-structure.comparator
+  (:require [algorithm-data-structure.util :refer [debug]]))
 
 (defn compare-default [_ a b]
   (if (and (instance? Number a) (instance? Number b))
@@ -7,8 +8,9 @@
       (< a b) -1
       :else 1)
     (do
-      (prn "Warning: Compare value is not number, using default comparator,
-            this can't used for other compare except equal.")
+      (when debug
+        (prn "Warning: Compare value is not number, using default comparator,
+            this can't used for other compare except equal."))
       (cond
        (= a b) 0
        :else 1))))

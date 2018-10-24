@@ -1,35 +1,38 @@
 (ns algorithm-data-structure.data-structures.trie
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/trie"
   (:require [algorithm-data-structure.data-structures.trie-node :as tn]))
 
-(defn head-character "*")
+(def head-character "*")
 
 (defn create []
-  (:head (tn/create head-character)))
+  {:head (tn/create head-character)})
 
-(defn add-word [trie word]
-  (let [characters (vec (seq word))
+(defn add-word [self word]
+  (let [characters (vec (map str (seq word)))
         len (count characters)
-        leni (dec len)]
-    (reduce #(update %1 :head
-                     tn/add-child (characters %2) (= %2 leni))
-            trie
-            (range len))))
+        leni (dec len)
+        f (fn f[node i]
+            (let [[parent node] (tn/add-child node (characters i) (= i leni))]
+              (if (= i leni)
+                parent
+                (tn/add-child-node parent (f node (inc i))))))]
+    (update self :head f 0)))
 
 (declare get-last-character-node)
 
-(defn suggest-next-characters [trie word]
-  (let [last-character (get-last-character-node trie word)]
+(defn suggest-next-characters [self word]
+  (let [last-character (get-last-character-node self word)]
     (when last-character
       (tn/suggest-children last-character))))
 
-(defn does-word-exist [trie word]
-  (boolean (get-last-character-node trie word)))
+(defn does-word-exist [self word]
+  (boolean (get-last-character-node self word)))
 
-(defn get-last-character-node [trie word]
-  (let [characters (seq word)
+(defn get-last-character-node [self word]
+  (let [characters (vec (map str (seq word)))
         len (count characters)]
     (loop [char-index 0
-           current-node (:head trie)]
+           current-node (:head self)]
       (if (= char-index len)
         current-node
         (when (tn/has-child current-node (characters char-index))

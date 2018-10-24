@@ -1,31 +1,31 @@
 (ns algorithm-data-structure.data-structures.stack
-  (:require [algorithm-data-structure.data-structures.linked-list :as llist]))
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/stack"
+  (:require [algorithm-data-structure.data-structures.linked-list :as ll]))
 
 (defn create []
-  (:linked-list (llist/create)))
+  {:linked-list (ll/create)})
 
-(defn empty? [stack]
-  (get-in stack [:linked-list :tail]))
+(defn empty?* [self]
+  (not (get-in self [:linked-list :tail])))
 
-(defn peek [stack]
-  (when (seq stack)
-    (get-in stack [:linked-list :tail :value])))
+(defn peek* [self]
+  (when (seq self)
+    (get-in self [:linked-list :tail :value])))
 
-(defn push [stack value]
-  (update-in stack [:linked-list]
-             llist/append value))
+(defn push [self value]
+  (update-in self [:linked-list] ll/append value))
 
-(defn pop [stack]
-  (let [removed-tail (llist/delete-tail (:linked-list stack))]
+(defn pop* [self]
+  (let [[_ removed-tail] (ll/delete-tail (:linked-list self))]
     (when removed-tail
       (:value removed-tail))))
 
-(defn ->array [stack]
-  (->> stack
+(defn ->array [self]
+  (->> self
        :linked-list
-       llist/->array
+       ll/->array
        (map :value)
        reverse))
 
-(defn ->string [stack callback]
-  (llist/->string (:linked-list stack) callback))
+(defn ->string [self callback]
+  (str (vec (ll/->string (:linked-list self) callback))))
