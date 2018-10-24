@@ -1,18 +1,20 @@
 (ns algorithm-data-structure.data-structures.segment-tree
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/tree/segment-tree"
   (:require [algorithm-data-structure.algorithms.math.is-power-of-two :as is-power-of-two]))
 
 (declare get-left-child-index get-right-child-index
-         build-tree-recursively range-query-recursive)
+         build-tree-recursively range-query-recursive
+         build-segment-tree)
 
 (defn log2 [n]
   (/ (Math/log n) (Math/log 2)))
 
 (defn init-segment-tree [input-array]
-  (repeat (dec (* 2 (let [input-array-length (count input-array)]
-                      (if (is-power-of-two/run input-array-length)
-                        input-array-length
-                        (-> input-array-length log2 Math/floor inc (Math/pow 2))))))
-          nil))
+  (vec (repeat (dec (* 2 (let [input-array-length (count input-array)]
+                       (if (is-power-of-two/run input-array-length)
+                         input-array-length
+                         (-> input-array-length log2 Math/floor inc (Math/pow 2))))))
+           nil)))
 
 (defn create [input-array operation operation-fallback]
   (build-segment-tree {:input-array input-array
@@ -20,53 +22,53 @@
                        :operation-fallback operation-fallback
                        :segment-tree (init-segment-tree input-array)}))
 
-(defn build-segment-tree [st]
+(defn build-segment-tree [self]
   (let [left-index 0
-        right-index (dec (count (:input-array st)))
+        right-index (dec (count (:input-array self)))
         position 0]
-    (build-tree-recursively left-index right-index position)))
+    (build-tree-recursively self left-index right-index position)))
 
-(defn build-tree-recursively [st left-input-index right-input-index position]
+(defn build-tree-recursively [self left-input-index right-input-index position]
   (if (= left-input-index right-input-index)
-    (assoc-in st [:segment-tree position]
-              (get-in st [:input-array left-input-index]))
-    (let [middel-index (-> left-input-index (+ right-input-index) (/ 2) Math/floor)
-          st (-> st
+    (assoc-in self [:segment-tree position]
+              (get-in self [:input-array left-input-index]))
+    (let [middel-index (-> left-input-index (+ right-input-index) (/ 2) Math/floor int)
+          self (-> self
                  (build-tree-recursively left-input-index
-                                         middel-index (get-left-child-index st position))
+                                         middel-index (get-left-child-index self position))
                  (build-tree-recursively (inc middel-index)
-                                         right-input-index (get-right-child-index st position)))]
-      (assoc-in st [:segment-tree position]
-                ((:operation st)
-                 (get-in st [:segment-tree (get-left-child-index st position)])
-                 (get-in st [:segment-tree (get-right-child-index st position)]))))))
+                                         right-input-index (get-right-child-index self position)))]
+      (assoc-in self [:segment-tree position]
+                ((:operation self)
+                 (get-in self [:segment-tree (get-left-child-index self position)])
+                 (get-in self [:segment-tree (get-right-child-index self position)]))))))
 
-(defn range-query [st query-left-index query-right-index]
+(defn range-query [self query-left-index query-right-index]
   (let [left-index 0
-        right-index (dec (count (:input-array st)))
+        right-index (dec (count (:input-array self)))
         position 0]
-    (range-query-recursive st query-left-index query-right-index
+    (range-query-recursive self query-left-index query-right-index
                            left-index right-index position)))
 
-(defn range-query-recursive [st query-left-index query-right-index
+(defn range-query-recursive [self query-left-index query-right-index
                              left-index right-index position]
   (if (and (<= query-left-index left-index)
            (>= query-right-index right-index))
-    (get-in st [:segment-tree position])
+    (get-in self [:segment-tree position])
     (if (or (> query-left-index right-index)
             (< query-right-index left-index))
-      (:operation-fallback st)
-      (let [middel-index (Math/floor (/ (+ left-index right-index) 2))
-            left-operation-result (range-query-recursive st query-left-index
+      (:operation-fallback self)
+      (let [middel-index (-> left-index (+ right-index) (/ 2) Math/floor int)
+            left-operation-result (range-query-recursive self query-left-index
                                                          query-right-index left-index
-                                                         middel-index (get-left-child-index st position))
-            right-operation-result (range-query-recursive st query-left-index
+                                                         middel-index (get-left-child-index self position))
+            right-operation-result (range-query-recursive self query-left-index
                                                           query-right-index (inc middel-index)
-                                                          right-index (get-right-child-index st position))]
-        ((:operation st) left-operation-result right-operation-result)))))
+                                                          right-index (get-right-child-index self position))]
+        ((:operation self) left-operation-result right-operation-result)))))
 
-(defn get-left-child-index [st parent-index]
+(defn get-left-child-index [self parent-index]
   (inc (* parent-index 2)))
 
-(defn get-right-child-index [st parent-index]
+(defn get-right-child-index [self parent-index]
   (+ (* parent-index 2) 2))

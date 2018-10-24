@@ -1,22 +1,22 @@
 (ns algorithm-data-structure.data-structures.queue
-  (:require [algorithm-data-structure.data-structures.linked-list :as llist]))
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/data-structures/queue"
+  (:require [algorithm-data-structure.data-structures.linked-list :as ll]))
 
 (defn create []
-  {:linked-list (llist/create)})
+  {:linked-list (ll/create)})
 
-(defn empty? [queue]
-  (-> queue :linked-list :tail not))
+(defn empty?* [self]
+  (-> self :linked-list :tail not))
 
-(defn peek [queue]
-  (when-let [h (-> queue :linked-list :head)]
-    (:value h)))
+(defn peek* [self]
+  (-> self :linked-list :head :value))
 
-(defn enqueue [queue value]
-  (update queue :linked-list append value))
+(defn enqueue [self value]
+  (update self :linked-list ll/append value))
 
-(defn dequeue [queue]
-  (let [[llist h] (-> queue :linked-list delete-head)]
-    [{:linked-list llist} (when h (:value h))]))
+(defn dequeue [self]
+  (let [[ll h] (-> self :linked-list ll/delete-head)]
+    [{:linked-list ll} (:value h)]))
 
-(defn ->string [queue callback]
-  (llist/->string (:linked-list queue) callback))
+(defn ->string [self callback]
+  (str (vec (ll/->string (:linked-list self) callback))))
