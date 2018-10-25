@@ -8,10 +8,11 @@
     {:root root}))
 
 (defn parent [self child-path]
-  (get-in self (cons :root (drop-last child-path))))
+  (when (seq child-path)
+    (get-in self (cons :root (drop-last child-path)))))
 
 (defn insert [self value]
-  {:root (bstn/insert (:root self) value)})
+  (update self :root bstn/insert value))
 
 (defn find* [self value]
   (bstn/find* (:root self) value))
@@ -30,8 +31,8 @@
           (:right parent-node2)
           (:left parent-node2))))))
 
-;; (defn assoc* [bst node]
-;;  (assoc-in self (concat [:root] (find-path self node)) node))
+(defn assoc* [self node]
+  (assoc-in self (concat [:root] (find-path self node)) node))
 
 (defn contains?* [self value]
   (bstn/contains?* (:root self) value))
