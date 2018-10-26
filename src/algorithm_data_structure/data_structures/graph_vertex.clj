@@ -20,6 +20,7 @@
 (defn delete-edge [self edge]
   (update self :edges #(first (ll/delete % edge))))
 
+;; XXX: neighbor vertex on vertex edge may no edges data, can only use its key
 (defn get-neighbors [self]
   (map #(let [v (get-in % [:value :start-vertex])]
           ;; FIXME: vertex self and v have to be same object, not just eq value

@@ -22,6 +22,7 @@
 (defn assoc-vertex-by-key [self vertex-key v]
   (assoc-in self [:vertices vertex-key] v))
 
+;; XXX: neighbor vertex on vertex edge may no edges data, can only use its key
 (defn get-neighbors [self vertex]
   (gv/get-neighbors vertex))
 

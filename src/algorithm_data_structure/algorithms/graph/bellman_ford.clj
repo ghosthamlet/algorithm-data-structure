@@ -1,27 +1,28 @@
 (ns algorithm-data-structure.algorithms.graph.bellman-ford
-  (:require [algorithm-data-structure.data-structures.graph :as ggraph]
-            [algorithm-data-structure.data-structures.graph-vertex :as gvertex]))
+  "https://github.com/trekhleb/javascript-algorithms/tree/master/src/algorithms/graph/bellman-ford"
+  (:require [algorithm-data-structure.data-structures.graph :as g]
+            [algorithm-data-structure.data-structures.graph-vertex :as gv]))
 
-(defn run [ggraph start-vertex]
-  (let [start-key (gvertex/get-key start-vertex)
+(defn run [graph start-vertex]
+  (let [start-key (gv/get-key start-vertex)
         distances (atom (assoc {} start-key 0))
         previous-vertices (atom {})
-        all-vertices (ggraph/get-all-vertices ggraph)]
+        all-vertices (g/get-all-vertices graph)]
     (doseq [vertex all-vertices]
-      (let [key (gvertex/get-key vertex)]
+      (let [key (gv/get-key vertex)]
         (swap! previous-vertices assoc key nil)
         (when (not= key start-key)
           (swap! distances assoc key Double/POSITIVE_INFINITY))))
     (dotimes [_ (dec (count all-vertices))]
-      (doseq [vertex-key (keys @distances)]
-        (let [vertex (ggraph/get-vertex-by-key vertex-key)]
-          (doseq [neighbor (ggraph/get-neighbors ggraph vertex)]
-            (let [edge (ggraph/find-edge ggraph vertex neighbor)
-                  distance->vertex (distances (gvertex/get-key vertex))
-                  distance->neighbor (+ distance->vertex (:weight edge))
-                  neighbor-key (gvertex/get-key neighbor)]
-              (when (< distance->neighbor (distances neighbor-key))
-                (swap! distances assoc neighbor-key distance->neighbor)
-                (swap! previous-vertices assoc neighbor-key vertex)))))))
+      (doseq [vertex-key (keys @distances)
+              :let [vertex (g/get-vertex-by-key graph vertex-key)]
+              neighbor (g/get-neighbors graph vertex)
+              :let [edge (g/find-edge graph vertex neighbor)
+                    distance->vertex (@distances (gv/get-key vertex))
+                    distance->neighbor (+ distance->vertex (:weight edge))
+                    neighbor-key (gv/get-key neighbor)]]
+        (when (< distance->neighbor (@distances neighbor-key))
+          (swap! distances assoc neighbor-key distance->neighbor)
+          (swap! previous-vertices assoc neighbor-key vertex))))
     {:distances @distances
      :previous-vertices @previous-vertices}))
