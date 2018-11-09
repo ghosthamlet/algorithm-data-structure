@@ -6,5 +6,5 @@
   :plugins [[lein-kibit "0.1.6"]
             ;; lein cljfmt check/fix
             [lein-cljfmt "0.5.7"]]
-  ;; TODO: use category thoery to reduce functional programming duplicate codes
+  ;; category thoery to reduce functional programming duplicate codes?
   :dependencies [[org.clojure/clojure "1.9.0"]])
