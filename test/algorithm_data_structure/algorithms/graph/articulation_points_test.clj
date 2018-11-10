@@ -13,7 +13,7 @@
 (deftest enter-vertex-test
   (let [visited-set (atom {})
         discovery-time (atom 0)
-        enter-vertex (#'ap/enter-vertex visited-set discovery-time)] 
+        enter-vertex (#'ap/enter-vertex visited-set discovery-time)]
     (enter-vertex {:current-vertex (gv/create 1)
                    :previous-vertices (gv/create 2)})
     (is (= 1
@@ -45,13 +45,13 @@
            @visited-set))))
 
 (deftest leave-vertex-test
-         (let [visited-set (atom {})
-               articulation-points-set (atom {})
-               start-vertex (gv/create 1)
-               leave-vertex (#'ap/leave-vertex visited-set articulation-points-set start-vertex)]
-           (leave-vertex {:current-vertex (gv/create 1)
-                          :previous-vertices (gv/create 2)})
-           (is (= 
-                 @visited-set))
-           (is (=
-                 @articulation-points-set))))
+  (let [visited-set (atom {})
+        articulation-points-set (atom {})
+        start-vertex (gv/create 1)
+        leave-vertex (#'ap/leave-vertex visited-set articulation-points-set start-vertex)]
+    (leave-vertex {:current-vertex (gv/create 1)
+                   :previous-vertices (gv/create 2)})
+    (is (=
+         @visited-set))
+    (is (=
+         @articulation-points-set))))
