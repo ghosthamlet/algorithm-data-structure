@@ -36,7 +36,7 @@
           :leave-vertex (f-fn leave-ret)))
     (is (= [1 2 3 4]
            @enter-ret))
-    (is (= [1 2 3 4]
+    (is (= [4 3 2 1]
            @leave-ret))
 
     (reset! enter-ret [])
@@ -54,5 +54,5 @@
                                        true)))))))
     (is (= [1 2]
            @enter-ret))
-    (is (= [1 2]
+    (is (= [2 1]
            @leave-ret))))
