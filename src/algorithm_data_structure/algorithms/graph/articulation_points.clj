@@ -6,7 +6,7 @@
 
 (defn- enter-vertex [visited-set discovery-time]
   (fn [{current-vertex :current-vertex
-        previous-vertex :previous-vertices}]
+        previous-vertex :previous-vertex}]
     (swap! discovery-time inc)
     (swap! visited-set assoc
            (gv/get-key current-vertex)
@@ -21,7 +21,7 @@
 
 (defn- leave-vertex [visited-set articulation-points-set start-vertex]
   (fn [{current-vertex :current-vertex
-        previous-vertex :previous-vertices}]
+        previous-vertex :previous-vertex}]
     (when previous-vertex
       (swap! visited-set update-in
              [(gv/get-key current-vertex) :low-discovery-time]
@@ -29,7 +29,8 @@
                (reduce (fn [acc n]
                          (let [neighbor-low-time
                                (get-in @visited-set
-                                       [(gv/get-key n) :low-discovery-time])]
+                                       [(gv/get-key n) :low-discovery-time]
+                                       0)]
                            (if (< neighbor-low-time acc)
                              neighbor-low-time
                              acc)))
@@ -39,14 +40,17 @@
                                (gv/get-neighbors current-vertex)))))
       (if (= previous-vertex start-vertex)
         (when (>= (get-in @visited-set
-                          [(gv/get-key previous-vertex) :independent-children-count])
+                          [(gv/get-key previous-vertex) :independent-children-count]
+                          0)
                   2)
           (swap! articulation-points-set assoc
                  (gv/get-key previous-vertex) previous-vertex))
         (let [current-discovery-time (get-in @visited-set
-                                             [(gv/get-key current-vertex) :low-discovery-time])
+                                             [(gv/get-key current-vertex) :low-discovery-time]
+                                             0)
               parent-discovery-time (get-in @visited-set
-                                            [(gv/get-key previous-vertex) :discovery-time])]
+                                            [(gv/get-key previous-vertex) :discovery-time]
+                                            0)]
           (when (<= parent-discovery-time current-discovery-time)
             (swap! articulation-points-set assoc
                    (gv/get-key previous-vertex) previous-vertex)))))))
@@ -59,9 +63,10 @@
   (let [visited-set (atom {})
         articulation-points-set (atom {})
         discovery-time (atom 0)
-        start-vertex (first (g/get-all-vertices graph))
-        dsf-callbacks {:enter-vertex (enter-vertex visited-set discovery-time)
-                       :leave-vertex (leave-vertex visited-set articulation-points-set start-vertex)
-                       :allow-traversal (allow-traversal visited-set)}]
-    (dfs/run graph start-vertex dsf-callbacks)
+        start-vertex (first (g/get-all-vertices graph))]
+    (dfs/run graph 
+             start-vertex 
+             :enter-vertex (enter-vertex visited-set discovery-time)
+             :leave-vertex (leave-vertex visited-set articulation-points-set start-vertex)
+             :allow-traversal (allow-traversal visited-set))
     @articulation-points-set))
