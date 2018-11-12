@@ -28,8 +28,8 @@
               (let [current-vertex (g/get-vertex-by-key graph current-vertex-key)
                     previous-vertex (g/get-vertex-by-key graph previous-vertex-key)]
                 (enter-vertex (->m current-vertex previous-vertex))
-               (doseq [next-vertex (g/get-neighbors graph current-vertex)]
-                 (if (allow-traversal (->m previous-vertex current-vertex next-vertex))
-                   (rec (gv/get-key next-vertex) current-vertex-key)))
-               (leave-vertex (->m current-vertex previous-vertex))))]
+                (doseq [next-vertex (g/get-neighbors graph current-vertex)]
+                  (if (allow-traversal (->m previous-vertex current-vertex next-vertex))
+                    (rec (gv/get-key next-vertex) current-vertex-key)))
+                (leave-vertex (->m current-vertex previous-vertex))))]
     (rec (gv/get-key start-vertex) (gv/get-key previous-vertex))))
