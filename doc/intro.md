@@ -2,6 +2,7 @@
 
 Algorithms and (Probabilistic) data structures Clojure version Port from 
 https://github.com/trekhleb/javascript-algorithms
+https://github.com/amejiarosario/dsa.js-data-structures-algorithms-javascript
 https://github.com/tylertreat/BoomFilters 
 https://github.com/Callidon/bloom-filters 
 https://github.com/ekzhu/datasketch/
